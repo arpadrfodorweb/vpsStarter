@@ -10,6 +10,10 @@ set -e
 echo "Updating system packages..."
 apt update && apt upgrade -y
 
+# Install SSH server if not already installed
+echo "Ensuring SSH server is installed..."
+apt install -y openssh-server
+
 # Create new user
 echo "Creating new user 'elliot'..."
 useradd -m -s /bin/bash elliot
@@ -54,14 +58,15 @@ sed -i 's/#PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
 sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
 sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
 
-# Restart SSH service
-systemctl restart sshd
+# Restart SSH service (using 'ssh' instead of 'sshd')
+echo "Restarting SSH service..."
+systemctl restart ssh
 
 echo "Setup complete! Now from your Windows machine, run:"
 echo "ssh-copy-id elliot@your-server-ip"
 echo ""
 echo "After successfully copying your SSH key, run this command on the server to disable password authentication:"
-echo "sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config && sudo systemctl restart sshd"
+echo "sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config && sudo systemctl restart ssh"
 
 # Clean up the script
 echo "Cleaning up..."
